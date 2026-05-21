@@ -2,8 +2,8 @@ import jwt from 'jsonwebtoken';
 import config from '../config/index.js';
 import type { JWTpayload } from '../types/type.js';
 
-const generateToken = (payload:JWTpayload)=>{
-    jwt.sign(payload,config.secret_key as string, {expiresIn:"3d"})
+export const generateToken = (payload:JWTpayload)=>{
+    return jwt.sign(payload,config.secret_key as string, {expiresIn:"3d"})
 }
 
 export const verifyToken = (token:string) => {
