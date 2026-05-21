@@ -30,6 +30,114 @@ class IssueService{
 
   return result.rows[0];
     }
+
+
+    // get all issues
+    getAllIssues = async (
+  sort = "newest",
+  type?: string,
+  status?: string
+) => {
+
+  let query = `SELECT * FROM issues`;
+  const values: any[] = [];
+  const conditions: string[] = [];
+
+  if (type) {
+    values.push(type);
+    conditions.push(`type = $${values.length}`);
+  }
+
+  if (status) {
+    values.push(status);
+    conditions.push(`status = $${values.length}`);
+  }
+
+  if (conditions.length > 0) {
+    query += ` WHERE ${conditions.join(" AND ")}`;
+  }
+
+  query +=
+    sort === "oldest"
+      ? ` ORDER BY created_at ASC`
+      : ` ORDER BY created_at DESC`;
+
+  const issuesResult = await pool.query(query, values);
+
+  const issues = issuesResult.rows;
+
+  if (issues.length === 0) {
+    return [];
+  }
+
+  const reporterIds = [
+    ...new Set(issues.map(issue => issue.reporter_id)),
+  ];
+
+  const reportersResult = await pool.query(
+    `
+    SELECT id, name, role
+    FROM users
+    WHERE id = ANY($1)
+    `,
+    [reporterIds]
+  );
+
+  const reporterMap = new Map(
+    reportersResult.rows.map(user => [user.id, user])
+  );
+
+  return issues.map(issue => ({
+    id: issue.id,
+    title: issue.title,
+    description: issue.description,
+    type: issue.type,
+    status: issue.status,
+    reporter: reporterMap.get(issue.reporter_id),
+    created_at: issue.created_at,
+    updated_at: issue.updated_at,
+  }));
+};
+
+    // get single issue
+  getSingleIssue = async (id: number) => {
+  const issueResult = await pool.query(
+    `
+    SELECT *
+    FROM issues
+    WHERE id = $1
+    `,
+    [id]
+  );
+
+  const issue = issueResult.rows[0];
+
+  if (!issue) {
+    return null;
+  }
+
+  const reporterResult = await pool.query(
+    `
+    SELECT id, name, role
+    FROM users
+    WHERE id = $1
+    `,
+    [issue.reporter_id]
+  );
+
+  const reporter = reporterResult.rows[0];
+
+  return {
+    id: issue.id,
+    title: issue.title,
+    description: issue.description,
+    type: issue.type,
+    status: issue.status,
+    reporter,
+    created_at: issue.created_at,
+    updated_at: issue.updated_at,
+  };
+};
 }
 
 export const issueService = new IssueService;

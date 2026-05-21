@@ -39,6 +39,66 @@ class IssueController{
   }
 
     }
+
+    // get all
+    getAll = async (req: Request, res: Response) => {
+  try {
+    const { sort, type, status } = req.query;
+
+    const result = await issueService.getAllIssues(
+      sort as string,
+      type as string,
+      status as string
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+// get sinle issue
+getSingleIssue = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (isNaN(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid issue id",
+      });
+    }
+
+    const result = await issueService.getSingleIssue(id);
+
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "Issue not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
 }
 
 export const issueController = new IssueController;
