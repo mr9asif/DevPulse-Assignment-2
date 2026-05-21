@@ -1,9 +1,17 @@
 
 export interface JWTpayload{
-     id: number
+   id: number
   email: string
   role: "contributor" | "maintainer";
 }
+
+export interface CreateIssuePayload {
+  title: string;
+  description: string;
+  type: string;
+  reporter_id: number;
+}
+
 
 export interface signupPayload{
     name: string;
