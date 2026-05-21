@@ -5,6 +5,12 @@ export interface JWTpayload{
   role: "contributor" | "maintainer";
 }
 
+export interface signupPayload{
+    name: string;
+  email: string;
+  password: string;
+  role: string;
+}
 export type UserRole = "contributor" | "maintainer";
 
 export interface User {
