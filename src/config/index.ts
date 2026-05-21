@@ -6,7 +6,8 @@ dotenv.config({path:path.join(cwd(),".env")});
 
 const config={
     port:env.PORT,
-    database_url:env.DATABASE_URL
+    database_url:env.DATABASE_URL,
+    secret_key:env.JWT_KEY
 }
 
 
