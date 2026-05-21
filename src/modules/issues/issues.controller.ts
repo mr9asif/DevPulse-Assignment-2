@@ -99,6 +99,77 @@ getSingleIssue = async (req: Request, res: Response) => {
     });
   }
 };
+
+// update 
+    updateIssue = async (req: Request, res: Response) => {
+    try {
+      const issueId = Number(req.params.id);
+
+      if (isNaN(issueId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid issue id",
+        });
+      }
+
+      const { title, description, type } = req.body;
+
+      const user = req.user;
+
+      const issue = await issueService.getIssueById(issueId);
+
+      if (!issue) {
+        return res.status(404).json({
+          success: false,
+          message: "Issue not found",
+        });
+      }
+
+      // Contributor rules
+      if (user.role === "contributor") {
+
+        // Must own the issue
+        if (issue.reporter_id !== user.id) {
+          return res.status(403).json({
+            success: false,
+            message: "You can update only your own issues",
+          });
+        }
+
+        // Issue must be open
+        if (issue.status !== "open") {
+          return res.status(403).json({
+            success: false,
+            message: "Only open issues can be updated",
+          });
+        }
+      }
+
+      // Maintainer automatically passes
+
+      const result = await issueService.updateIssue(
+        issueId,
+        title,
+        description,
+        type
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: "Issue updated successfully",
+        data: result,
+      });
+
+    } catch (error) {
+      console.error(error);
+
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error",
+      });
+    }
+  };
+
 }
 
 export const issueController = new IssueController;
