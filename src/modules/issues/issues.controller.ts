@@ -170,6 +170,42 @@ getSingleIssue = async (req: Request, res: Response) => {
     }
   };
 
+//   delete
+deleteIssue = async (req: Request, res: Response) => {
+  try {
+    const issueId = Number(req.params.id);
+
+    if (isNaN(issueId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid issue id",
+      });
+    }
+
+    const deletedIssue = await issueService.deleteIssue(issueId);
+
+    if (!deletedIssue) {
+      return res.status(404).json({
+        success: false,
+        message: "Issue not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Issue deleted successfully",
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
 }
 
 export const issueController = new IssueController;

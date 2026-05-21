@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { isMaintainer } from "../middleware/isMaintainer.js";
 import { verifyJWT } from "../middleware/verifyJWT.js";
 import { issueController } from "./issues.controller.js";
 
@@ -12,6 +13,12 @@ router.patch(
   "/issues/:id",
   verifyJWT,
   issueController.updateIssue
+);
+router.delete(
+  "/issues/:id",
+  verifyJWT,
+  isMaintainer,
+  issueController.deleteIssue
 );
 
 export default router;

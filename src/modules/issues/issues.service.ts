@@ -179,6 +179,20 @@ class IssueService{
 
     return result.rows[0];
   };
+
+//   delete
+deleteIssue = async (id: number) => {
+  const result = await pool.query(
+    `
+    DELETE FROM issues
+    WHERE id = $1
+    RETURNING *;
+    `,
+    [id]
+  );
+
+  return result.rows[0];
+};
 }
 
 
