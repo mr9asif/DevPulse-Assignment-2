@@ -46,6 +46,3 @@ export interface Issue {
   updated_at: Date;
 }
 
-
-// xcvxckvlxkvxv
-// asdfsfsdfsf
