@@ -12,6 +12,12 @@ export interface CreateIssuePayload {
   reporter_id: number;
 }
 
+export interface IssuePayload {
+  title: string;
+  description: string;
+  type: "bug" | "feature";
+  status: "open" | "in_progress" | "resolved";
+}
 
 export interface signupPayload{
     name: string;

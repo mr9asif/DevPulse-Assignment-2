@@ -111,10 +111,8 @@ getSingleIssue = async (req: Request, res: Response) => {
           message: "Invalid issue id",
         });
       }
-
-      const { title, description, type } = req.body;
-
-      const user = req.user;
+ const payload = req.body;
+    const user = req.user;
 
       const issue = await issueService.getIssueById(issueId);
 
@@ -143,15 +141,21 @@ getSingleIssue = async (req: Request, res: Response) => {
             message: "Only open issues can be updated",
           });
         }
+
+         // Contributors cannot change status
+      if (payload.status) {
+        return res.status(403).json({
+          success: false,
+          message: "Only maintainers can update issue status",
+        });
+      }
       }
 
       // Maintainer automatically passes
 
       const result = await issueService.updateIssue(
-        issueId,
-        title,
-        description,
-        type
+          issueId,
+      payload
       );
 
       return res.status(200).json({
